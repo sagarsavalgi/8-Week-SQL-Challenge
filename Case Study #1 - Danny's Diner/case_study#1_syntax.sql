@@ -70,10 +70,10 @@
 	FROM
 		(
 		SELECT
-		   customer_id,
-		   COUNT(product_name) AS purchase,
-		   product_name,
-		   RANK() OVER(PARTITION BY customer_id ORDER BY COUNT(product_name) desc) AS rnk
+		 	customer_id,
+		  	COUNT(product_name) AS purchase,
+		 	product_name,
+		   	RANK() OVER(PARTITION BY customer_id ORDER BY COUNT(product_name) desc) AS rnk
 		FROM
 			dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
 		GROUP BY
@@ -126,16 +126,16 @@
 	WITH preMember_cte AS
 		(
 		SELECT
-		s.customer_id,
-		product_name,
-		join_date,
-		order_date,
-		RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date desc) AS rk
+			s.customer_id,
+			product_name,
+			join_date,
+			order_date,
+			RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date desc) AS rk
 		FROM
 			dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
 			INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
 		WHERE
-		join_date>order_date
+			join_date>order_date
 		)
 	SELECT
 		customer_id,
@@ -170,13 +170,13 @@
 	WITH points_cte AS
 	(
 		SELECT
-		customer_id,
-		s.product_id,
-		price,
-		CASE
-			WHEN product_name != 'sushi' THEN price*10
-			WHEN product_name = 'sushi' THEN price*10*2
-			END AS points
+			customer_id,
+			s.product_id,
+			price,
+			CASE
+				WHEN product_name != 'sushi' THEN price*10
+				WHEN product_name = 'sushi' THEN price*10*2
+				END AS points
 		FROM
 			dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id = m.product_id
 	)
