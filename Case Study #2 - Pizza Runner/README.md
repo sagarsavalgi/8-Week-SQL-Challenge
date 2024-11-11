@@ -6,7 +6,7 @@
 * [Bussiness Task](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/edit/main/Case%20Study%20%232%20-%20Pizza%20Runner/README.md#%EF%B8%8F-bussiness-task)
 * [Entity Relationship Diagram](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/edit/main/Case%20Study%20%232%20-%20Pizza%20Runner/README.md#-entity-relationship-diagram)
 * [Case Study Questions](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/edit/main/Case%20Study%20%232%20-%20Pizza%20Runner/README.md#-case-study-questions)
-* [My Solution]()
+* [My Solution](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner#-my-solution)
 
 ---
 ## 🛠️ Bussiness Task
