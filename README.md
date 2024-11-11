@@ -43,6 +43,15 @@ Danny was sold on the idea, but he knew that pizza alone was not going to help h
 
 Danny started by recruiting “runners” to deliver fresh pizza from Pizza Runner Headquarters (otherwise known as Danny’s house) and also maxed out his credit card to pay freelance developers to build a mobile app to accept orders from customers.
 
+    The following topics are covered in Pizza Runner's case study:
+    
+    1. Common table expressions
+    2. Group by aggregates
+    3. Table joins
+    4. String transformations
+    5. Dealing with null values
+    6. Regular expressions
+
 ***View the case study [here](https://8weeksqlchallenge.com/case-study-2/) and my solution 
   [here](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner).***
 
