@@ -44,12 +44,12 @@ Danny wants to use the data to answer a few simple questions about his customers
 ### Q1. What is the total amount each customer spent at the restaurant?
 ```TSQL
 	SELECT
-		customer_id,
-		SUM(price) AS TotalSales
+            customer_id,
+            SUM(price) AS TotalSales
 	FROM	
-		dannys_diner.sales s INNER JOIN  dannys_diner.menu m ON s.product_id=m.product_id
+            dannys_diner.sales s INNER JOIN  dannys_diner.menu m ON s.product_id=m.product_id
 	GROUP BY
-		customer_id;
+            customer_id;
 ```
 |customer_id|	TotalSales|
 |---|---|
@@ -62,12 +62,12 @@ Danny wants to use the data to answer a few simple questions about his customers
 ### Q2. How many days has each customer visited the restaurant?
 ```TSQL
 	SELECT 
-		customer_id,
-		COUNT(DISTINCT order_date) AS vist_days
+            customer_id,
+            COUNT(DISTINCT order_date) AS vist_days
 	FROM
-		dannys_diner.sales
+            dannys_diner.sales
 	GROUP BY
-		customer_id;
+            customer_id;
 ```
 |customer_id	|vist_days|
 |---|---|
@@ -80,20 +80,22 @@ Danny wants to use the data to answer a few simple questions about his customers
 ### Q3. What was the first item from the menu purchased by each customer?
 ```TSQL
 WITH orders_cte AS (
-		SELECT 
-			customer_id,
-			order_date,
-			product_name,
-			ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY order_date asc) AS rnk
-		FROM 
-			dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
-			)
-		SELECT 
-			customer_id,
-			product_name
-		FROM 
-			orders_cte
-		WHERE rnk = 1;
+                    SELECT
+                        customer_id,
+                        order_date,
+                        product_name,
+                        ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY order_date asc) AS rnk
+                    FROM 
+                        dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
+                    )
+
+            SELECT 
+                customer_id,
+                product_name
+            FROM 
+                orders_cte
+            WHERE
+                rnk = 1;
 
 ```
 |customer_id|	product_name|
@@ -106,15 +108,15 @@ WITH orders_cte AS (
 ---
 ### Q4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 ```TSQL
-	SELECT TOP 1
-		product_name,
-		COUNT(1) AS popular_product
-	FROM
-		dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
-	GROUP BY 
-		product_name 
-	ORDER BY 
-		popular_product desc;
+            SELECT TOP 1
+                product_name,
+                COUNT(1) AS popular_product
+            FROM
+                dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
+            GROUP BY 
+                product_name 
+            ORDER BY 
+                popular_product desc;
 
 ```
 |product_name|	popular_product|
@@ -126,25 +128,25 @@ WITH orders_cte AS (
 ### Q5. Which item was the most popular for each customer?
 ```TSQL
 
-	SELECT
-		customer_id,
-		product_name,
-		purchase
-	FROM
-		(
-		SELECT
-		   customer_id,
-		   COUNT(product_name) AS purchase,
-		   product_name,
-		   RANK() OVER(PARTITION BY customer_id ORDER BY COUNT(product_name) desc) AS rnk
-		FROM
-			dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
-		GROUP BY
-			customer_id,
-			product_name
-		) dt
-	WHERE 
-		rnk = 1;
+            SELECT
+                customer_id,
+                product_name,
+                purchase
+            FROM
+                (
+                    SELECT
+                        customer_id,
+                        COUNT(product_name) AS purchase,
+                        product_name,
+                        RANK() OVER(PARTITION BY customer_id ORDER BY COUNT(product_name) desc) AS rnk
+                    FROM
+                        dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id 
+                    GROUP BY
+                        customer_id,
+                        product_name
+                ) dt
+            WHERE 
+                rnk = 1;
 ```
 |customer_id|	product_name|	purchase|
 |--------|--------|-------|
@@ -158,39 +160,39 @@ WITH orders_cte AS (
 ---
 ### Q6. Which item was purchased first by the customer after they became a member?
 ```TSQL
-	SELECT
-		*
-		FROM
-			(
-			SELECT 
-				customer_id,
-				order_date,
-				product_id,
-				product_name,
-				join_date,
-				mem_status,
-				RANK() OVER(PARTITION BY customer_id ORDER BY order_date asc) AS first_product
-			FROM
-				(
-				SELECT 
-					s.customer_id,
-					order_date,
-					s.product_id,
-					product_name,
-					join_date,
-					CASE
-						WHEN order_date<join_date THEN 'null' ELSE 'member' 
-						END AS mem_status
+    SELECT
+        *
+    FROM
+        (
+            SELECT 
+                customer_id,
+                order_date,
+                product_id,
+                product_name,
+                join_date,
+                mem_status,
+                RANK() OVER(PARTITION BY customer_id ORDER BY order_date asc) AS first_product
+            FROM
+                (
+                    SELECT 
+                        s.customer_id,
+                        order_date,
+                        s.product_id,
+                        product_name,
+                        join_date,
+                        CASE
+                            WHEN order_date<join_date THEN 'null' ELSE 'member' 
+                            END AS mem_status
 		
-				FROM 
-					dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
-					INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
-					) dt
-			WHERE
-				dt.mem_status = 'member'
-				) dt2
-		WHERE 
-			first_product = 1;
+                    FROM 
+                        dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
+                        INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
+                ) dt
+            WHERE
+                dt.mem_status = 'member'
+        ) dt2
+    WHERE
+        first_product = 1;
 
 ```
 |customer_id|	order_date|	product_id|	product_name|	join_date|	mem_status|	first_product|
@@ -202,29 +204,30 @@ WITH orders_cte AS (
 ---
 ### Q7. Which item was purchased just before the customer became a member?
 ```TSQL
-	WITH preMember_cte AS
-		(
-		SELECT
-		s.customer_id,
-		product_name,
-		join_date,
-		order_date,
-		RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date desc) AS rk
-		FROM
-			dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
-			INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
-		WHERE
-		join_date>order_date
-		)
-	SELECT
-		customer_id,
-		product_name,
-		join_date,
-		order_date
-	FROM
-		preMember_cte
-	WHERE 
-		rk=1;
+    WITH preMember_cte AS
+        (
+            SELECT
+                s.customer_id,
+                product_name,
+                join_date,
+                order_date,
+                RANK() OVER(PARTITION BY s.customer_id ORDER BY order_date desc) AS rk
+            FROM
+                dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
+                INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
+            WHERE
+                join_date>order_date
+        )
+
+    SELECT
+        customer_id,
+        product_name,
+        join_date,
+        order_date
+    FROM
+        preMember_cte
+    WHERE 
+        rk=1;
 
 ```  
 |customer_id|	product_name|	join_date|	order_date|
@@ -236,18 +239,18 @@ WITH orders_cte AS (
 ---
 ### Q8. What is the total items and amount spent for each member before they became a member?
 ```TSQL
-	SELECT
-		s.customer_id,
-		COUNT(product_name) AS item_count,
-		SUM(price) AS totalPrice
+        SELECT
+            s.customer_id,
+            COUNT(product_name) AS item_count,
+            SUM(price) AS totalPrice
 		
-	FROM
-		dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
-		INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
-	WHERE
-		join_date>order_date
-	GROUP BY 
-		s.customer_id;
+        FROM
+            dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
+            INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
+        WHERE
+            join_date>order_date
+        GROUP BY 
+            s.customer_id;
 ```
 |customer_id|	item_count|	totalPrice|
 |---|---|---|
@@ -259,26 +262,27 @@ WITH orders_cte AS (
 ### Q9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 Note: Only customers who are members receive points when purchasing items
 ```TSQL
-	WITH points_cte AS
-	(
-		SELECT
-		customer_id,
-		s.product_id,
-		price,
-		CASE
-			WHEN product_name != 'sushi' THEN price*10
-			WHEN product_name = 'sushi' THEN price*10*2
-			END AS points
-		FROM
-			dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id = m.product_id
-	)
-	SELECT 
-		customer_id,
-		SUM(points) AS pointsEarned
-	FROM
-		points_cte
-	GROUP BY
-		customer_id;
+    WITH points_cte AS
+        (
+            SELECT
+                customer_id,
+                s.product_id,
+                price,
+                CASE
+                    WHEN product_name != 'sushi' THEN price*10
+                    WHEN product_name = 'sushi' THEN price*10*2
+                    END AS points
+            FROM
+                dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id = m.product_id
+        )
+
+        SELECT 
+            customer_id,
+            SUM(points) AS pointsEarned
+        FROM
+            points_cte
+        GROUP BY
+            customer_id;
 ```
 |customer_id|	pointsEarned|
 |---|---|
@@ -289,36 +293,37 @@ Note: Only customers who are members receive points when purchasing items
 --- 
 ### Q10. In the first week after a customer joins the program (including their join date), they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
 ```TSQL
-	WITH bufferPeriod_cte AS 
-	(
-	SELECT
-		s.customer_id,
-		join_date,
-		DATEADD(DD,6,join_date) AS week_from_joind,
-		order_date,
-		product_name,
-		price	
-	FROM
-		dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
-		INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
-	)
-	SELECT
-		customer_id,
-		SUM(
-		CASE
-			WHEN order_date BETWEEN join_date AND week_from_joind THEN price*10*2 
-			WHEN product_name != 'sushi' THEN price*10
-			WHEN product_name = 'sushi' THEN price*10*2
-		END ) AS totalPoints_Jan
+    WITH bufferPeriod_cte AS 
+        (
+            SELECT
+                s.customer_id,
+                join_date,
+                DATEADD(DD,6,join_date) AS week_from_joind,
+                order_date,
+                product_name,
+                price	
+            FROM
+                dannys_diner.sales s INNER JOIN dannys_diner.members m ON s.customer_id = m.customer_id
+                INNER JOIN dannys_diner.menu me ON me.product_id = s.product_id
+        )
+
+        SELECT
+            customer_id,
+            SUM(
+                CASE
+                    WHEN order_date BETWEEN join_date AND week_from_joind THEN price*10*2 
+                    WHEN product_name != 'sushi' THEN price*10
+                    WHEN product_name = 'sushi' THEN price*10*2
+                END ) AS totalPoints_Jan
 			
-	FROM
-		bufferPeriod_cte
-	WHERE
-		MONTH(order_date) = 01
-	GROUP BY
-		customer_id
-	ORDER BY
-		customer_id asc;
+        FROM
+            bufferPeriod_cte
+        WHERE
+            MONTH(order_date) = 01
+        GROUP BY
+            customer_id
+        ORDER BY
+            customer_id asc;
 
 ```
   |customer_id|	totalPoints_Jan|
@@ -332,18 +337,19 @@ Note: Only customers who are members receive points when purchasing items
 ### Join All The Things 
 ```TSQL
 
-SELECT
-	s.customer_id,
-	order_date,
-	product_name,
-	price,
-	CASE
-		WHEN join_date>order_date THEN 'N' 
-		WHEN join_date IS NULL THEN 'N'
-		ELSE 'Y' END AS members
-FROM	
-	dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id
-	LEFT JOIN dannys_diner.members mem ON s.customer_id=mem.customer_id;
+    SELECT
+        s.customer_id,
+        order_date,
+        product_name,
+        price,
+        CASE
+            WHEN join_date>order_date THEN 'N' 
+            WHEN join_date IS NULL THEN 'N'
+            ELSE 'Y'
+        END AS members
+    FROM	
+        dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id
+        LEFT JOIN dannys_diner.members mem ON s.customer_id=mem.customer_id;
 
 ```
 |Customer_id|	order_date|	product_name|	price|	members|
@@ -368,33 +374,32 @@ FROM
 
 ```TSQL
 WITH ranking_cte AS 
-	(
-	SELECT
-		s.customer_id,
-		order_date,
-		product_name,
-		price,
-		CASE
-			WHEN join_date>order_date THEN 'N' 
-			WHEN join_date IS NULL THEN 'N'
-			ELSE 'Y' 
-		END AS members
-		FROM	
-		dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id
-		LEFT JOIN dannys_diner.members mem ON s.customer_id=mem.customer_id
-	)
-	SELECT
-		customer_id,
-		order_date,
-		product_name,
-		price,
-		members,
-		CASE
-			WHEN members='Y' 
-			THEN RANK() OVER(PARTITION BY customer_id,members ORDER BY order_date) ELSE NULL
-		END AS ranking
-	FROM 
-		ranking_cte
+                    (
+                        SELECT
+                            s.customer_id,
+                            order_date,
+                            product_name,
+                            price,
+                            CASE
+                                WHEN join_date>order_date THEN 'N' 
+                                WHEN join_date IS NULL THEN 'N'
+                                ELSE 'Y' 
+                            END AS members
+                        FROM	
+                            dannys_diner.sales s INNER JOIN dannys_diner.menu m ON s.product_id=m.product_id
+                            LEFT JOIN dannys_diner.members mem ON s.customer_id=mem.customer_id
+                    )
+            SELECT
+                customer_id,
+                order_date,
+                product_name,
+                price,
+                members,
+                CASE
+                    WHEN members='Y' THEN RANK() OVER(PARTITION BY customer_id,members ORDER BY order_date) ELSE NULL
+                END AS ranking
+            FROM 
+                ranking_cte
 
 ```
 | customer_id | order_date | product_name | price | members | ranking |
