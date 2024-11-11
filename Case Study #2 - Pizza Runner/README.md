@@ -50,4 +50,4 @@ View my solution [HERE]().
 ---
 ## 🚀 My Solution
 * View the complete syntax [HERE](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner/Solution).
-* View the result and explanation [HERE](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/blob/main/Case%20Study%20%232%20-%20Pizza%20Runner/A.%20Pizza%20Metrics.md).
+* View the result and explanation [HERE](https://github.com/sagarsavalgi/8-Week-SQL-Challenge/tree/main/Case%20Study%20%232%20-%20Pizza%20Runner).
